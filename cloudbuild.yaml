@@ -1,36 +1,9 @@
 steps:
-# set up ssh access
-- name: gcr.io/cloud-builders/git
-  args: ['fetch', '--unshallow', '--tags']
-- name: 'gcr.io/cloud-builders/kubectl'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    mkdir -p .ssh && \
-    ssh-keyscan bitbucket.org >> .ssh/known_hosts && \
-    chmod 0700 .ssh && \
-    gcloud container clusters get-credentials --zone="us-central1-a" "primary" && \
-    ( echo "-----BEGIN RSA PRIVATE KEY-----" && \
-      kubectl get secret cloud-build-bitbucket-private-key -o jsonpath="{.data.private_key}" && \
-      echo && echo "-----END RSA PRIVATE KEY-----" ) > .ssh/id_rsa && \
-    chmod 600 .ssh/id_rsa
-
-# download cache
-- name: 'gcr.io/cloud-builders/docker'
-  entrypoint: 'bash'
-  args:
-  - '-c'
-  - |
-    docker pull gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-recent || exit 0
-
 # build image
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '--cache-from=gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-recent'
   - '-t=gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-$SHORT_SHA'
-  - '-t=gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-recent'
   - '--build-arg=short_sha=$SHORT_SHA'
   - '--build-arg=branch_name=$BRANCH_NAME'
   - '.'
@@ -43,4 +16,4 @@ steps:
 - name: 'ubuntu'
   args: ['echo', '$TAG_NAME', '$BRANCH_NAME']
 
-images: ['gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-$SHORT_SHA', 'gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-recent']
+images: ['gcr.io/$PROJECT_ID/$REPO_NAME:$BRANCH_NAME-$SHORT_SHA']
