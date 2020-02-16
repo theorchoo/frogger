@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frogger In Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+    @font-face {
+        font-family: 'Arcade Classic';
+        src: url('fonts/arcadeclassic.eot');
+        src: url('fonts/arcadeclassic.eot?#iefix') format('embedded-opentype'),
+             url('fonts/arcadeclassic.woff') format('woff'),
+             url('fonts/arcadeclassic.ttf') format('truetype'),
+             url('fonts/arcadeclassic.svg#arcadeclassic') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+    }
+
+    .gameOuter {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        max-width: 1100px;
+        border-radius: 10px;
+        border: solid 12px white;
+        box-sizing: content-box;
+        background: #f3f3f3;
+    }
+
+    .gameInner {
+        position: absolute;
+        top: 80px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .canvas {
+        position: absolute;
+        border: none;
+        border-radius: 5px;
+        box-shadow: inset 0px 0px 8px rgba(0,0,0,0.2);
+    }
+
+    .topBar {
+        position: absolute;
+        top: 0;
+        display: flex;
+        align-items: center;
+        right: 0;
+        left: 0;
+        height: 70px;
+        border-bottom: 2px solid #e3e3e3;
+        background: white;
+        justify-content: space-between;
+        padding: 0 10px;
+    }
+
+    .scores {
+        flex: 1;
+        display: flex;
+    }
+
+    .logo {
+        flex-shrink: 0;
+    }
+
+    .logo > img {
+        width: 42px;
+        margin-top: 7px;
+    }
+
+    .cell {
+        flex: 1;
+        text-align: center;
+    }
+
+    .cell h5, .cell h2 {
+        margin: 0;
+        font-family: "Arcade Classic";
+        padding: 0;
+    }
+
+    .cell h5 {
+        font-size: 17px;
+        color: #505050;
+    }
+
+    .cell h2 {
+        font-size: 36px;
+    }
+
+    #endScreen {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 80%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 0 10px;
+        font-family: "Arcade Classic";
+        text-align: center;
+        padding: 11px;
+        max-width: 500px;
+    }
+
+    #backdrop {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    @media (min-width: 1200px) {
+        .gameOuter {
+            max-height: 800px;
+        }
+    }
+
+    .btn-magenta {
+        color: #fff;
+        background-color: #ff0085;
+        border-color: #ff0085;
+    }
+    .btn-magenta:hover {
+        color: #fff;
+        background-color: #d00075;
+        border-color: #d00075;
+    }
+
+    </style>
+</head>
+<body>
+    <img id="bg" src="images/bg/main_bg2.png" style="display: none;">
+    <img id="hole" src="images/bg/hole.png" style="display: none;">
+    <img id="holeFilled" src="images/bg/hole_filled.png" style="display: none;">
+
+    <img id="redwine" src="images/redwine.png" style="display: none;">
+    <img id="redapple" src="images/redapple.png" style="display: none;">
+    <img id="redapple_2" src="images/redapple_2.png" style="display: none;">
+    <img id="redapple_3" src="images/redapple_3.png" style="display: none;">
+    <img id="whitewine" src="images/whitewine.png" style="display: none;">
+    <img id="champagne" src="images/champagne.png" style="display: none;">
+    <img id="greenapple" src="images/greenapple.png" style="display: none;">
+    <img id="greenapple_2" src="images/greenapple_2.png" style="display: none;">
+    <img id="greenapple_3" src="images/greenapple_3.png" style="display: none;">
+    <img id="fishtail" src="images/fishtail.png" style="display: none;">
+    <img id="bee2" src="images/bee2.png" style="display: none;">
+    <img id="gefilte_big" src="images/gefilte_big.png" style="display: none;">
+    <img id="gefilte_small" src="images/gefilte_small.png" style="display: none;">
+    <img id="bee" src="images/bee.png" style="display: none;">
+
+    <img id="charUp1" src="images/char/up1.png" style="display: none;">
+    <img id="charUp2" src="images/char/up2.png" style="display: none;">
+    <img id="charDown1" src="images/char/down1.png" style="display: none;">
+    <img id="charDown2" src="images/char/down2.png" style="display: none;">
+    <img id="charLeft1" src="images/char/left1.png" style="display: none;">
+    <img id="charLeft2" src="images/char/left2.png" style="display: none;">
+    <img id="charRight1" src="images/char/right1.png" style="display: none;">
+    <img id="charRight2" src="images/char/right2.png" style="display: none;">
+    <img id="death1" src="images/dead1.png" style="display: none;">
+    <img id="death2" src="images/dead2.png" style="display: none;">
+    <img id="death3" src="images/dead3.png" style="display: none;">
+
+    <img id="life" src="images/life.png" style="display: none;">
+
+<!--    <script src="scripts/hammer.min.js"></script>-->
+
+    <div class="gameOuter">
+        <div class="topBar" id="topBar">
+            <div class="logo">
+                <img src="images/UI/logo2.png">
+            </div>
+            <div class="scores">
+                <div class="cell">
+                    <h5>SCORE</h5>
+                    <h2 id="score">150</h2>
+                </div>
+                <div class="cell">
+                    <h5>HIGHSCORE</h5>
+                    <h2 style="color: #ff0085;" id="highscore">15070</h2>
+                </div>
+            </div>
+        </div>
+        <div class="gameInner" id="gameInner">
+            <canvas id="background-canvas" class="canvas"></canvas>
+            <canvas id="canvas" class="canvas" ></canvas>
+        </div>
+    </div>
+    <div id="backdrop"></div>
+    <div id="endScreen">
+        <div id="formDiv" style="display: none;">
+            <h1 id="endScreenTitle">Game Over</h1>
+            <h3 id="endScreenScore">Score: 5000</h3>
+            <hr/>
+            <form id="form">
+                <div class="form-group">
+                    <label for="name">Submit To&nbsp; &nbsp;Leaderboard</label>
+                    <input type="text" class="form-control form-control-lg text-center" id="name" placeholder="write your name">
+                </div>
+                <button type="submit" class="btn btn-magenta btn-block">Submit</button>
+            </form>
+            <hr/>
+            <button id="startOver" type="button" class="btn btn-outline-secondary btn-block">Start Over</button>
+        </div>
+        <div id="leaderboard">
+            <h2>Leaderboard</h2>
+            <div class="container-fluid" style="font-size: 18px;">
+                <div class="row">
+                    <div class="col-2 text-left">#</div>
+                    <div class="col text-left">Name</div>
+                    <div class="col text-right">Score</div>
+                </div>
+                <div style="height: 2px; background-color: black; margin: 2px 0;"></div>
+                <div class="row" style="color: #ff0085">
+                    <div class="col-2 text-left">1</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-left">2</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-left">3</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-left">4</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-left">5</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+                <div style="height: 1px; background-color: #999; margin: 2px 0;"></div>
+                <div class="row" style="color: #666;">
+                    <div class="col-2 text-left">44</div>
+                    <div class="col text-left">Or Dagan</div>
+                    <div class="col text-right">5500</div>
+                </div>
+            </div>
+            <br>
+            <button type="button" class="btn btn-outline-secondary btn-block">Start Over</button>
+
+
+        </div>
+    </div>
+
+    <script src="scripts/frogger.js"></script>
+</body>
+</html>

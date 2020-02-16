@@ -2,10 +2,11 @@
 var Frogger = (function() {
 
     // Locate the main <canvas> element on the page
-    var canvas = document.getElementById("canvas"),
-
+    var canvas = document.getElementById("canvas");
+    canvas.width = 80 * Math.floor(document.body.clientWidth / 80);
+    canvas.height = 80 * Math.floor(document.body.clientHeight / 80);
         // Get a reference to the <canvas> element's 2-D drawing surface context
-        drawingSurface = canvas.getContext("2d"),
+    var drawingSurface = canvas.getContext("2d"),
 
         // Locate the background <canvas> element on the page
         backgroundCanvas = document.getElementById("background-canvas"),
@@ -718,8 +719,8 @@ Frogger.ImageSprite.prototype = {
     // game board is divided into rows with different obstacles on each, and columns within
     // which the player's character can move
     var _grid = {
-            width: 80,
-            height: 80
+            width: 40,
+            height: 40
         },
 
         // Define the number of rows on the game board. The top two rows contain the score,
@@ -731,12 +732,12 @@ Frogger.ImageSprite.prototype = {
         // of lives remaining. There are 17 rows, therefore, though since we start counting
         // rows at position 0, the total number of rows is said to be 16 using the grid
         // square defined previously
-        _numRows = 16,
+        _numRows = (Frogger.canvas.height / 40) - 1,
 
         // Define the number of columns on the game board, from left to right, based on the
         // game board grid defined previously. The total number of columns is 12 but since
         // we count position 0 as a column, we represent the number as 11 instead
-        _numColumns = 11,
+        _numColumns = (Frogger.canvas.width / 40) - 1,
 
         // Define the limits of movement of the player's character on the game board in
         // pixels, returning the left-, right-, top- and bottom-most positions the
@@ -1740,25 +1741,40 @@ Frogger.Character = (function(Frogger) {
     // according to where the screen has been tapped. This is useful since users with
     // touch screens are typically on mobile devices that do not have access to
     // physical keyboards to press the arrow keys to move the character.
-    Frogger.canvas.addEventListener("touchstart", function(event) {
+    const hammertime = new Hammer(Frogger.canvas);
+    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
 
-        // Get a reference to the position of the touch on the screen in pixels from the
-        // top-left position of the touched element, in this case the game board
-        var touchLeft = event.targetTouches[0].clientX,
-            touchTop = event.targetTouches[0].clientY;
-
-        // Execute the move() function, passing along the correct direction based on the
-        // position tapped on the game board
-        if (touchLeft < (Frogger.drawingSurfaceWidth / 8)) {
-            move(Frogger.direction.LEFT);
-        } else if (touchLeft > (3 * Frogger.drawingSurfaceWidth / 8)) {
-            move(Frogger.direction.RIGHT);
-        } else if (touchTop < (Frogger.drawingSurfaceHeight / 8)) {
-            move(Frogger.direction.UP);
-        } else if (touchTop > (3 * Frogger.drawingSurfaceHeight / 8)) {
+    hammertime.on('swipe', function(ev) {
+        if (ev.direction === Hammer.DIRECTION_DOWN) {
             move(Frogger.direction.DOWN);
+        } else if (ev.direction === Hammer.DIRECTION_UP) {
+            move(Frogger.direction.UP);
+        } else if (ev.direction === Hammer.DIRECTION_LEFT) {
+            move(Frogger.direction.LEFT);
+        } else if (ev.direction === Hammer.DIRECTION_RIGHT) {
+            move(Frogger.direction.RIGHT);
         }
-    }, false);
+    });
+
+    // Frogger.canvas.addEventListener("touchstart", function(event) {
+    //
+    //     // Get a reference to the position of the touch on the screen in pixels from the
+    //     // top-left position of the touched element, in this case the game board
+    //     var touchLeft = event.targetTouches[0].clientX,
+    //         touchTop = event.targetTouches[0].clientY;
+    //
+    //     // Execute the move() function, passing along the correct direction based on the
+    //     // position tapped on the game board
+    //     if (touchLeft < (Frogger.drawingSurfaceWidth / 8)) {
+    //         move(Frogger.direction.LEFT);
+    //     } else if (touchLeft > (3 * Frogger.drawingSurfaceWidth / 8)) {
+    //         move(Frogger.direction.RIGHT);
+    //     } else if (touchTop < (Frogger.drawingSurfaceHeight / 8)) {
+    //         move(Frogger.direction.UP);
+    //     } else if (touchTop > (3 * Frogger.drawingSurfaceHeight / 8)) {
+    //         move(Frogger.direction.DOWN);
+    //     }
+    // }, false);
 
     // Expose the local getTop(), getPosition() and setPosition() methods so they are
     // available to other code modules

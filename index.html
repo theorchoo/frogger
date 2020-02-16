@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Frogger In Canvas</title>
-    <meta name="viewport" content="width=480, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
     @font-face {
         font-family: 'Arcade Classic';
@@ -14,21 +15,27 @@
         font-weight: normal;
         font-style: normal;
     }
-
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+    }
     .canvas {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        border: 2px solid #000;
-        width: 480px;
-        height: 640px;
+        border: none;
+        /*width: 100vw;*/
+        /*height: 100vh;*/
     }
     </style>
 </head>
 <body>
-    <canvas id="background-canvas" class="canvas" width="960" height="1280"></canvas>
-    <canvas id="canvas" class="canvas" width="960" height="1280"></canvas>
+    <canvas id="background-canvas" class="canvas" ></canvas>
+    <canvas id="canvas" class="canvas" ></canvas>
 
+    <script src="scripts/hammer.min.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 </html>
